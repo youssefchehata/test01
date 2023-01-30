@@ -25,13 +25,13 @@ thead button::before {
  
 }
 
-thead button.ascending::after {
+thead button.asc::after {
   content: '⬇';
   display: inline-block;
   margin-left: 1em;
 }
 
-thead button.descending::after {
+thead button.desc::after {
   content: '⬆';
   display: inline-block;
   margin-left: 1em;

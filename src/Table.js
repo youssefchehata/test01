@@ -1,40 +1,10 @@
 import React from 'react';
-const useSortableData = (items, config = null) => {
-  const [sortConfig, setSortConfig] = React.useState(config);
 
-  const sortedItems = React.useMemo(() => {
-    let sortableItems = [...items];
-    if (sortConfig !== null) {
-      sortableItems.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'ascending' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return sortableItems;
-  }, [items, sortConfig]);
-
-  const requestSort = (key) => {
-    let direction = 'ascending';
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === 'ascending'
-    ) {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  return { items: sortedItems, requestSort, sortConfig };
-};
-
-const Table = ({ data }) => {
-  const { items, requestSort, sortConfig } = useSortableData(data);
+const Table = ({ data, sortTable }) => {
+  const [sortConfig, setSortConfig] = React.useState({
+    key: '',
+    direction: '',
+  });
 
   const getClassNamesFor = (name) => {
     if (!sortConfig) {
@@ -42,6 +12,24 @@ const Table = ({ data }) => {
     }
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
+
+
+
+  const handleSortTable = (name) => {
+    const newSortConfig = {
+      key: name,
+      direction: '',
+    };
+    if (sortConfig.direction === '' || sortConfig.direction === 'asc') {
+      newSortConfig.direction = 'desc';
+    } else {
+      newSortConfig.direction = 'asc';
+    }
+
+    setSortConfig(newSortConfig);
+    sortTable(name, newSortConfig.direction);
+  };
+
   return (
     <table>
       <caption>Users</caption>
@@ -53,7 +41,7 @@ const Table = ({ data }) => {
           <th>
             <button
               type='button'
-              onClick={() => requestSort('username')}
+              onClick={() => handleSortTable('username')}
               className={getClassNamesFor('username')}
             >
               Username
@@ -68,8 +56,8 @@ const Table = ({ data }) => {
           <th>
             <button
               type='button'
-              onClick={() => requestSort('city')}
-              className={getClassNamesFor('city')}
+              onClick={() => handleSortTable('address.city')}
+              className={getClassNamesFor('address.city')}
             >
               City
             </button>
@@ -77,13 +65,13 @@ const Table = ({ data }) => {
         </tr>
       </thead>
       <tbody>
-        {items.map((item) => (
+        {data.map((item) => (
           <tr key={item.id}>
             <td>{item.id}</td>
             <td>{item.username}</td>
             <td>{item.email}</td>
             <td>{item.phone}</td>
-            <td>{item?.city}</td>
+            <td>{item?.address.city}</td>
           </tr>
         ))}
       </tbody>
